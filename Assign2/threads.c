@@ -33,7 +33,7 @@ void * do_partial(void * arg){
 int main(int argc, char *argv[]){
     struct thread_info *tinfo;
 	// we need to collect argument and convert to integer
-	int error, n, i=0, j=0;    
+	int error, n, i=0;    
     n = atoi(argv[1]);
     n = (double)n;
     

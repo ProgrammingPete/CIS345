@@ -9,23 +9,25 @@
 //pthread_t tid[2];
 double start_points[4];
 double grand_sum=0.0;
-pthread_mutex_t lock;
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
-//Might have to create sum kind of struct to pass arguments into the
-// do_partial method.
-struct thread_info{ // used for pthread_create
+//this holds information for each newly created thread, excluding the main thread
+struct thread_info{
     pthread_t tid2;
     int threadnum;
-    int arg;    
+    int index;    
 };
+void sharedResource(int threadnum, int index){
+    double sum = sqrt(start_points[index])+sqrt(start_points[index+1]);
+    pthread_mutex_lock(&lock);
+    printf("\nThread %d running", threadnum);
+	grand_sum += sum;
+    pthread_mutex_unlock(&lock);
+}
+
 void * do_partial(void * arg){
     struct thread_info *tinfo = arg;
-    double sum;
-    pthread_mutex_lock(&lock);
-    printf("\nThread %d running", tinfo->threadnum);
-	sum = sqrt(start_points[tinfo->arg])+sqrt(start_points[tinfo->arg+1]);
-	grand_sum = sum;
-    pthread_mutex_unlock(&lock);
+    sharedResource(tinfo->threadnum, tinfo->index);
     return NULL;
 }
 
@@ -50,17 +52,18 @@ int main(int argc, char *argv[]){
     //allocate memory for structure
     tinfo = calloc(2, sizeof(struct thread_info));
     
-    //create 3 threads and compute sum
+    //create 2 threads and compute sum
 	while(i<2){
         tinfo[i].threadnum = i +1; 
-        tinfo[i].arg = i +1; 
+        tinfo[i].index = i +1; 
         error = pthread_create(&tinfo[i].tid2,NULL,&do_partial, &tinfo[i]);
         if(error != 0)
             perror("pthread_create");
         i++;	
 	}
     
-    do_partial(0); // PROBLEM WITH THIS?? 
+    sharedResource(0,0); // main thread accesses shared resource 
+    //join threads 
     pthread_join(tinfo[0].tid2, NULL);
     pthread_join(tinfo[1].tid2, NULL);
     pthread_mutex_destroy(&lock);

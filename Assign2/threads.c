@@ -68,7 +68,7 @@ int main(int argc, char *argv[]){
         i++;	
 	}
     
-    sharedResource(0,0); // main thread accesses shared resource 
+    sharedResource(3,0); // main thread accesses shared resource 
     //join threads 
     pthread_join(tinfo[0].tid, NULL);
     pthread_join(tinfo[1].tid, NULL);

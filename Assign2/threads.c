@@ -21,7 +21,7 @@ void sharedResource(int threadnum, int index){
     double sum;
     int start = start_points[index];
     int end = start_points[index+1];
-    while(start <= end){
+    while(start < end){
         sum += sqrt(start);
         start++;
     }
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]){
         return -1;
     }
 	//main program calculates start_points
-    for(int count=0; count < (sizeof(start_points)/sizeof(double)); count++)
+    for(int count=0; count < (sizeof(start_points)/sizeof(int)); count++)
         start_points[count] = 1 + (double)count*(n/3.0);
     
     //initialization of i number of threads
